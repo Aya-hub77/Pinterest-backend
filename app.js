@@ -51,13 +51,34 @@ app.use(cookieParser());
 function generateCsrfToken() {
   return crypto.randomBytes(32).toString("hex");
 }
+
+app.use((req, res, next) => {
+  if (!req.cookies["XSRF-TOKEN"]) {
+    const token = generateCsrfToken();
+    res.cookie("XSRF-TOKEN", token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: "none",
+    });
+  }
+  next();
+});
+
+export function verifyCsrf(req, res, next) {
+  const csrfCookie = req.cookies["XSRF-TOKEN"];
+  const csrfHeader = req.header("X-CSRF-Token");
+
+  if (!csrfCookie || !csrfHeader)
+    return res.status(403).json({ message: "Missing CSRF token" });
+
+  if (csrfCookie !== csrfHeader)
+    return res.status(403).json({ message: "Invalid CSRF token" });
+
+  next();
+}
+
 app.get("/csrf-token", (req, res) => {
-  const token = generateCsrfToken();
-  res.cookie("XSRF-TOKEN", token, {
-    httpOnly: false,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
-  });
+  const token = req.cookies["XSRF-TOKEN"];
   res.json({ csrfToken: token });
 });
 
