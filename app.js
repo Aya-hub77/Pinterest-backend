@@ -48,36 +48,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-function generateCsrfToken() {
-  return crypto.randomBytes(32).toString("hex");
-}
-
-app.use((req, res, next) => {
-  if (!req.cookies["XSRF-TOKEN"]) {
-    const token = generateCsrfToken();
-    res.setHeader('Set-Cookie', `XSRF-TOKEN=${token}; Path=/; HttpOnly; SameSite=None; Secure`);
-  }
-  next();
-});
-
-export function verifyCsrf(req, res, next) {
-  const csrfCookie = req.cookies["XSRF-TOKEN"];
-  const csrfHeader = req.header("X-CSRF-Token");
-
-  if (!csrfCookie || !csrfHeader)
-    return res.status(403).json({ message: "Missing CSRF token" });
-
-  if (csrfCookie !== csrfHeader)
-    return res.status(403).json({ message: "Invalid CSRF token" });
-
-  next();
-}
-
-app.get("/csrf-token", (req, res) => {
-  const token = req.cookies["XSRF-TOKEN"];
-  res.json({ csrfToken: token });
-});
-
 app.use("/", router);
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 if (process.env.NODE_ENV === "production") {
