@@ -155,7 +155,7 @@ export const refreshToken = async (req, res, next) => {
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "none",
       maxAge: REFRESH_EXPIRES,
       path: "/"
