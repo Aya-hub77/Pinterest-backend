@@ -55,11 +55,7 @@ function generateCsrfToken() {
 app.use((req, res, next) => {
   if (!req.cookies["XSRF-TOKEN"]) {
     const token = generateCsrfToken();
-    res.cookie("XSRF-TOKEN", token, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production", 
-      sameSite: "none",
-    });
+    res.setHeader('Set-Cookie', `XSRF-TOKEN=${token}; Path=/; HttpOnly; SameSite=None; Secure`);
   }
   next();
 });
