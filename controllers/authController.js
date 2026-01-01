@@ -148,11 +148,10 @@ export const refreshToken = async (req, res, next) => {
 
     const newRefreshToken = createRefreshToken();
     const newHash = hashToken(newRefreshToken);
-    await RefreshTokenModel.create({
-      userId: user._id,
-      tokenHash: newHash,
-      expiresAt: new Date(Date.now() + REFRESH_EXPIRES)
-    });
+
+    tokenDoc.tokenHash = newHash;
+    tokenDoc.expiresAt = new Date(Date.now() + REFRESH_EXPIRES);
+    await tokenDoc.save();
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
