@@ -47,6 +47,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.set('trust proxy', 1);
 
 app.use("/", router);
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
