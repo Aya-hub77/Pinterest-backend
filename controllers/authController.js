@@ -135,10 +135,10 @@ export const logout = async (req, res, next) => {
 // ------------------------- REFRESH TOKEN (with rotation)
 export const refreshToken = async (req, res, next) => {
   try {
-    const { refreshToken } = req.cookies;
-    if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
+    const token = req.body.token || req.cookies.refreshToken;
+    if (!token) return res.status(401).json({ message: "No refresh token" });
 
-    const hashed = hashToken(refreshToken);
+    const hashed = hashToken(token);
     const tokenDoc = await RefreshTokenModel.findOne({ tokenHash: hashed });
     if (!tokenDoc) return res.status(401).json({ message: "Invalid refresh token" });
 
@@ -153,15 +153,7 @@ export const refreshToken = async (req, res, next) => {
     tokenDoc.expiresAt = new Date(Date.now() + REFRESH_EXPIRES);
     await tokenDoc.save();
 
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: REFRESH_EXPIRES,
-      path: "/"
-    });
-
-    res.json({ accessToken, user: { id: user._id, username: user.username } });
+    res.json({ accessToken, refreshToken: newRefreshToken, user: { id: user._id, username: user.username } });
   } catch (err) {
     next(err);
   }
