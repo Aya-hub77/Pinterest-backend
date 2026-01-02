@@ -65,15 +65,7 @@ export const signup = async (req, res, next) => {
       return res.status(500).json({ message: "Error creating refresh token" });
     }
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: REFRESH_EXPIRES,
-      path: "/",
-    });
-
-    res.status(201).json({ message: "User created", user: { id: user._id, username: user.username }, accessToken });
+    res.status(201).json({ message: "User created", user: { id: user._id, username: user.username }, accessToken, refreshToken});
   } catch (err) {
     next(err);
   }
@@ -103,15 +95,7 @@ export const login = async (req, res, next) => {
       expiresAt: new Date(Date.now() + REFRESH_EXPIRES)
     });
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: REFRESH_EXPIRES,
-      path: "/"
-    });
-
-    res.json({ message: "Logged in", user: { id: user._id, username: user.username }, accessToken });
+    res.json({ message: "Logged in", user: { id: user._id, username: user.username }, accessToken, refreshToken });
   } catch (err) {
     next(err);
   }
@@ -135,7 +119,7 @@ export const logout = async (req, res, next) => {
 // ------------------------- REFRESH TOKEN (with rotation)
 export const refreshToken = async (req, res, next) => {
   try {
-    const token = req.body.token || req.cookies.refreshToken;
+    const token = req.body.token;
     if (!token) return res.status(401).json({ message: "No refresh token" });
 
     const hashed = hashToken(token);
@@ -146,7 +130,7 @@ export const refreshToken = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: "User not found" });
     const accessToken = signAccessToken(user);
 
-    res.json({ accessToken, refreshToken: newRefreshToken, user: { id: user._id, username: user.username } });
+    res.json({ accessToken, refreshToken: token, user: { id: user._id, username: user.username } });
   } catch (err) {
     next(err);
   }
