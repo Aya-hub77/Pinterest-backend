@@ -1,5 +1,6 @@
 import Pin from "../models/pin.js";
 import Notification from "../models/notification.js";
+import { upload, cloudinary } from "../middleware/upload.js";
 
 
 export const searchPins = async (req, res, next) => {
@@ -26,7 +27,17 @@ export const createPin = async (req, res, next) => {
     const { caption, tags } = req.body;
     const userId = req.user._id;
     if (!req.file) return res.status(400).json({ message: "image is required" });
-    const imgUrl = req.file.path;
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "portfolio_uploads" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+    const imgUrl = result.secure_url;
     const tagsArray = tags ? JSON.parse(tags) : [];
     if (!tagsArray.length) { return res.status(400).json({ message: "At least one tag is required" }); };
     const newPin = await Pin.create({ caption, img: imgUrl, owner: userId, tags: tagsArray });
