@@ -9,6 +9,6 @@ const router = Router();
 router.post("/signup", sanitizeInput(["username", "email", "password"]), signupValidator, signup);
 router.post("/login", sanitizeInput(["email", "password"]), loginValidator, login);
 router.post("/logout", logout);
-router.get("/refresh-token", refreshToken);
+router.post("/refresh-token", refreshToken);
 
 export default router;
