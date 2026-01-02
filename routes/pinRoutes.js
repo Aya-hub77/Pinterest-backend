@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createPin, getPin, getPins, getSuggestions, searchPins, userPins, toggleLikePin, toggleSavePin } from "../controllers/pinControllers.js";
-import upload from "../middleware/upload.js";
+import { upload } from "../middleware/upload.js";
 import { sanitizeInput } from "../middleware/sanitizeInput.js";
 import { authRequired } from "../middleware/authRequired.js";
 
