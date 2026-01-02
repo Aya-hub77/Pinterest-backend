@@ -146,13 +146,6 @@ export const refreshToken = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: "User not found" });
     const accessToken = signAccessToken(user);
 
-    const newRefreshToken = createRefreshToken();
-    const newHash = hashToken(newRefreshToken);
-
-    tokenDoc.tokenHash = newHash;
-    tokenDoc.expiresAt = new Date(Date.now() + REFRESH_EXPIRES);
-    await tokenDoc.save();
-
     res.json({ accessToken, refreshToken: newRefreshToken, user: { id: user._id, username: user.username } });
   } catch (err) {
     next(err);
