@@ -26,10 +26,10 @@ export const createPin = async (req, res, next) => {
     const { caption, tags } = req.body;
     const userId = req.user._id;
     if (!req.file) return res.status(400).json({ message: "image is required" });
-    const img = req.file.filename;
+    const imgUrl = req.file.path;
     const tagsArray = tags ? JSON.parse(tags) : [];
     if (!tagsArray.length) { return res.status(400).json({ message: "At least one tag is required" }); };
-    const newPin = await Pin.create({ caption, img, owner: userId, tags: tagsArray });
+    const newPin = await Pin.create({ caption, img: imgUrl, owner: userId, tags: tagsArray });
     res.status(201).json({
       id: newPin._id,
       caption: newPin.caption,
@@ -37,7 +37,7 @@ export const createPin = async (req, res, next) => {
       tags: newPin.tags,
       owner: userId,
       createdAt: newPin.createdAt,
-      url: `/uploads/${newPin.img}`
+      url: imgUrl,
     });
   } catch (error) {
     next(error);
@@ -54,7 +54,7 @@ export const getPins = async (req, res, next) => {
       caption: p.caption,
       img: p.img,
       createdAt: p.createdAt,
-      url: `/uploads/${p.img}`
+      url: p.img,
     }));
 
     res.json(formatted);
@@ -84,7 +84,7 @@ export const userPins = async (req, res, next) => {
       caption: p.caption,
       img: p.img,
       createdAt: p.createdAt,
-      url: `/uploads/${p.img}`
+      url: p.img,
     }));
 
     res.status(200).json(formatted);
