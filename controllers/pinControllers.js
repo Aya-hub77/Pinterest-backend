@@ -1,6 +1,5 @@
 import Pin from "../models/pin.js";
 import Notification from "../models/notification.js";
-import { upload, cloudinary } from "../middleware/upload.js";
 
 
 export const searchPins = async (req, res, next) => {
@@ -27,20 +26,10 @@ export const createPin = async (req, res, next) => {
     const { caption, tags } = req.body;
     const userId = req.user._id;
     if (!req.file) return res.status(400).json({ message: "image is required" });
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "portfolio_uploads" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(req.file.buffer);
-    });
-    const imgUrl = result.secure_url;
+    const img = req.file.filename;
     const tagsArray = tags ? JSON.parse(tags) : [];
     if (!tagsArray.length) { return res.status(400).json({ message: "At least one tag is required" }); };
-    const newPin = await Pin.create({ caption, img: imgUrl, owner: userId, tags: tagsArray });
+    const newPin = await Pin.create({ caption, img, owner: userId, tags: tagsArray });
     res.status(201).json({
       id: newPin._id,
       caption: newPin.caption,
@@ -48,7 +37,7 @@ export const createPin = async (req, res, next) => {
       tags: newPin.tags,
       owner: userId,
       createdAt: newPin.createdAt,
-      url: imgUrl,
+      url: `/uploads/${newPin.img}`
     });
   } catch (error) {
     next(error);
@@ -65,7 +54,7 @@ export const getPins = async (req, res, next) => {
       caption: p.caption,
       img: p.img,
       createdAt: p.createdAt,
-      url: p.img,
+      url: `/uploads/${p.img}`
     }));
 
     res.json(formatted);
@@ -95,7 +84,7 @@ export const userPins = async (req, res, next) => {
       caption: p.caption,
       img: p.img,
       createdAt: p.createdAt,
-      url: p.img,
+      url: `/uploads/${p.img}`,
     }));
 
     res.status(200).json(formatted);

@@ -1,19 +1,22 @@
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+   cb(null, join(__dirname, "../uploads"));
+  },
+  filename: (req, file, cb) => {
+   cb(null, Date.now() + "-" + file.originalname);
+  },
 });
-
-const storage = multer.memoryStorage();
-
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) cb(null, true);
-  else cb(new Error("Only images are allowed"), false);
+  if (file.mimetype.startsWith("image/")) {
+   cb(null, true);
+  } else {
+   cb(new Error("Only images are allowed"), false);
+  }
 };
-
 const upload = multer({ storage, fileFilter });
-
-export { upload, cloudinary };
+export default upload;
