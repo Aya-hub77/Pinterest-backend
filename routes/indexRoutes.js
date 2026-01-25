@@ -14,9 +14,9 @@ router.get("/pins", verifySession, getPins);
 router.get("/pin/:id", verifySession, getPin);
 router.post("/pin", verifySession, upload.single("image"), sanitizeInput(["caption"]), createPin);
 router.get("/user/:userId", userPins);
-router.get("/:id", verifySession, getUser);
 router.get("/search", verifySession, searchPins);
 router.get("/suggestions", verifySession, getSuggestions);
+router.get("/:id", verifySession, getUser);
 router.get("/", (req, res) => {
   res.send("API is running...");
 });
