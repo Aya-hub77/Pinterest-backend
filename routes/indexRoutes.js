@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { login, signup, logout, getPins, createPin, getPin, getUser, userPins, searchPins, getSuggestions } from "../controllers/controllers";
-import {sanitizeInput} from '../middleware/sanitizeInput';
-import {signupValidator} from '../middleware/signupValidator';
-import {loginValidator} from '../middleware/loginValidator';
-import { verifySession } from "../middleware/verifySession";
-import upload from "../middleware/upload";
+import { login, signup, logout, getPins, createPin, getPin, getUser, userPins, searchPins, getSuggestions } from "../controllers/controllers.js";
+import {sanitizeInput} from '../middleware/sanitizeInput.js';
+import {signupValidator} from '../middleware/signupValidator.js';
+import {loginValidator} from '../middleware/loginValidator.js';
+import { verifySession } from "../middleware/verifySession.js";
+import upload from "../middleware/upload.js";
 
 const router = Router();
 router.post('/signup', signupValidator, sanitizeInput(["username", "email", "password"]), signup );
