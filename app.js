@@ -27,7 +27,12 @@ app.use(cookieParser());
 app.use(sessionMiddleware);
 
 app.use("/", router);
-app.use('/uploads', express.static(join(__dirname, 'uploads')));
+app.use('/uploads', express.static(join(__dirname, 'uploads'), {
+  setHeaders: (res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  }
+}));
 app.use(errorHandler);
 
 export default app;
