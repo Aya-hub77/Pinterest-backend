@@ -60,6 +60,17 @@ export const logout = (req, res, next) => {
   });
 };
 
+export const me = (req, res, next) => {
+  try {
+    const user = req.session.user;
+    if (!user) return res.status(401).json({message: "Not logged in"});
+    const { id, username, email } = user;
+    res.json({id, email, username});
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getPins = async (req, res, next) => {
   try {
     const pins = await Pin.find();
