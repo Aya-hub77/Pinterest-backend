@@ -99,10 +99,9 @@ export const getPin = async (req, res, next) => {
 
 export const createPin = async (req, res, next) => {
   try {
-    const { caption, tags } = req.body;
-    const userId = req.session.user.id;
-    if (!req.file) return res.status(400).json({ message: "image is required" });
-    const img = req.file.filename;
+    const { caption, tags, img, owner } = req.body;
+    const userId = owner || req.session?.user?.id;
+    if (!img) return res.status(400).json({ message: "image is required" });
     const tagsArray = Array.isArray(tags) ? tags : JSON.parse(tags)
     if (!tagsArray.length) { return res.status(400).json({ message: "At least one tag is required" }); };
     const newPin = await Pin.create({ caption, img, owner: userId, tags: tagsArray });
