@@ -11,11 +11,11 @@ router.post('/signup', signupValidator, sanitizeInput(["username", "email", "pas
 router.post('/login', loginValidator, sanitizeInput(["email", "password"]), login)
 router.post("/logout", verifySession, logout);
 router.get("/me", verifySession, me);
-router.get("/pins", getPins);
-router.get("/pin/:id", getPin);
-router.post("/pin", upload.single("image"), sanitizeInput(["caption"]), createPin);
-router.get("/user/:userId", userPins);
-router.get("/search", searchPins);
+router.get("/pins", verifySession, getPins);
+router.get("/pin/:id", verifySession, getPin);
+router.post("/pin", verifySession, upload.single("image"), sanitizeInput(["caption"]), createPin);
+router.get("/user/:userId", verifySession, userPins);
+router.get("/search", verifySession, searchPins);
 router.get("/suggestions", getSuggestions);
 router.get("/:id", verifySession, getUser);
 router.get("/", (req, res) => {
