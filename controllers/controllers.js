@@ -78,9 +78,8 @@ export const getPins = async (req, res, next) => {
     const formatted = shuffled.map((p) => ({
       id: p._id,
       caption: p.caption,
-      img: p.img,
+      img: `${process.env.BACKEND_URL}/uploads/${p.img}`,
       createdAt: p.createdAt,
-      url: `/uploads/${p.img}`
     }));
     res.json(formatted);
   } catch (error) {
@@ -110,11 +109,10 @@ export const createPin = async (req, res, next) => {
     res.status(201).json({
       id: newPin._id,
       caption: newPin.caption,
-      img: newPin.img,
+      img: `${process.env.BACKEND_URL}/uploads/${newPin.img}`,
       tags: newPin.tags,
       owner: userId,
       createdAt: newPin.createdAt,
-      url: `/uploads/${newPin.img}`
     });
   } catch (error) {
     next(error);
@@ -138,9 +136,8 @@ export const userPins = async (req, res, next) => {
     const formatted = pins.map(p => ({
       id: p._id,
       caption: p.caption,
-      img: p.img,
+      img: `${process.env.BACKEND_URL}/uploads/${p.img}`,
       createdAt: p.createdAt,
-      url: `/uploads/${p.img}`,
     }));
     res.status(200).json(formatted);
   } catch (error) {
